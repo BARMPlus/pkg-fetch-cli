@@ -14,7 +14,7 @@ const config = require('./config')
 function downloadCode (projectName, originProjectName) {
   return new Promise((resolve) => {
     spinner.start('Loading Template') //下载模板Loading
-    const downloadUrl = `github:${config.gitUser}/${originProjectName}`
+    const downloadUrl = `direct:https://github.com/${config.gitUser}/${originProjectName}.git`
     download(downloadUrl, projectName, { clone: true }, err => {
       if (err) {
         spinner.fail('Download Template Fail')
@@ -73,7 +73,9 @@ async function chooseNpmInstallPrompt () {
 
 function npmInstallSpawn (options) {
   spinner.start('Loading dependencies') //下载相关依赖
-  const install = spawn(options.cnpm && 'cnpm' || 'npm', ['install', '--registry=https://registry.npm.taobao.org/'])
+  let usageRegistry=options.cnpm && 'cnpm' || 'npm'
+  usageRegistry= (process.platform === 'win32') ? `${usageRegistry}.cmd` : usageRegistry
+  const install = spawn(usageRegistry, ['install', '--registry=https://registry.npm.taobao.org/'])
 
   install.stdout.on('data', (res) => {
     console.log(res.toString()) //toString将buffer转为汉子
